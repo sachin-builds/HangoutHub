@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+
+  reviews   Review[]
+  favorites Favorite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Cafe {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+
+  address     String
+
+  latitude    Float
+  longitude   Float
+
+  priceRange  PriceRange
+
+  reviews     Review[]
+  favorites   Favorite[]
+  vibes       CafeVibe[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model Review {
+  id        String @id @default(uuid())
+
+  rating    Int
+  comment   String?
+
+  userId    String
+  cafeId    String
+
+  user User @relation(fields: [userId], references: [id])
+  cafe Cafe @relation(fields: [cafeId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+
+
+model Favorite {
+  id String @id @default(uuid())
+
+  userId String
+  cafeId String
+
+  user User @relation(fields: [userId], references: [id])
+  cafe Cafe @relation(fields: [cafeId], references: [id])
+
+  @@unique([userId, cafeId])
+}
+
+model Vibe {
+  id   String @id @default(uuid())
+
+  name String @unique
+
+  cafes CafeVibe[]
+}
+
