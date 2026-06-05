@@ -79,3 +79,18 @@ model Vibe {
   cafes CafeVibe[]
 }
 
+model CafeVibe {
+  cafeId String
+  vibeId String
+
+  cafe Cafe @relation(fields: [cafeId], references: [id])
+  vibe Vibe @relation(fields: [vibeId], references: [id])
+
+  @@id([cafeId, vibeId])
+}
+
+enum PriceRange {
+  BUDGET
+  MID
+  PREMIUM
+}
