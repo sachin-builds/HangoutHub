@@ -2,10 +2,54 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 
+import { registerUser } from "@/services/auth.service";
+
 export default function RegisterForm() {
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+
+      await registerUser(formData);
+
+      alert("Registration Successful!");
+
+      router.push("/login");
+    } catch (error: any) {
+      alert(
+        error.response?.data?.message ||
+          "Registration Failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8">
@@ -18,7 +62,10 @@ export default function RegisterForm() {
         Join HangoutHub today.
       </p>
 
-      <form className="mt-8 space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="mt-8 space-y-5"
+      >
 
         {/* Name */}
 
@@ -36,9 +83,13 @@ export default function RegisterForm() {
             />
 
             <input
+              name="name"
               type="text"
+              value={formData.name}
+              onChange={handleChange}
               placeholder="Enter your name"
               className="w-full border rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-amber-600"
+              required
             />
 
           </div>
@@ -61,9 +112,13 @@ export default function RegisterForm() {
             />
 
             <input
+              name="email"
               type="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="Enter your email"
               className="w-full border rounded-xl py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-amber-600"
+              required
             />
 
           </div>
@@ -86,9 +141,13 @@ export default function RegisterForm() {
             />
 
             <input
+              name="password"
               type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Enter password"
               className="w-full border rounded-xl py-3 pl-10 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-600"
+              required
             />
 
             <button
@@ -110,9 +169,11 @@ export default function RegisterForm() {
         {/* Button */}
 
         <button
-          className="w-full bg-amber-700 hover:bg-amber-800 text-white py-3 rounded-xl font-semibold transition"
+          type="submit"
+          disabled={loading}
+          className="w-full bg-amber-700 hover:bg-amber-800 text-white py-3 rounded-xl font-semibold transition disabled:opacity-50"
         >
-          Create Account
+          {loading ? "Creating Account..." : "Create Account"}
         </button>
 
       </form>

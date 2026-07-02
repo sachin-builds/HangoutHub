@@ -23,13 +23,25 @@ model User {
 
 model Cafe {
   id          String   @id @default(uuid())
+
   name        String
   description String?
 
   address     String
+  city        String
 
   latitude    Float
   longitude   Float
+
+  imageUrl    String?
+
+  openingTime String?
+  closingTime String?
+
+  wifi        Boolean @default(true)
+  powerSockets Boolean @default(true)
+
+  noiseLevel  Int @default(3)
 
   priceRange  PriceRange
 
@@ -40,7 +52,6 @@ model Cafe {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
-
 
 model Review {
   id        String @id @default(uuid())
@@ -90,7 +101,7 @@ model CafeVibe {
 }
 
 enum PriceRange {
-  BUDGET
+  LOW
   MID
   PREMIUM
 }
