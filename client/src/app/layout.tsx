@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+
 import "./globals.css";
+
 import { cn } from "@/lib/utils";
 
 import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/footer/Footer";
+
 import { AuthProvider } from "@/context/AuthContext";
 
 const inter = Inter({
@@ -24,7 +27,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "HangoutHub",
-  description: "Find the perfect café to work, study, or relax.",
+  description: "Cafe Discovery Platform",
 };
 
 export default function RootLayout({

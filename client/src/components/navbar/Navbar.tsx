@@ -3,20 +3,13 @@
 import Link from "next/link";
 import { Coffee, Heart, User, Menu, LogOut } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+
 import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const { user, logout } = useAuth();
-
-  const router = useRouter();
-
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
-  };
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b">
@@ -42,26 +35,51 @@ export default function Navbar() {
               Cafes
             </Link>
 
-            <Link href="/recommendations" className="hover:text-amber-700">
+            <Link
+              href="/recommendations"
+              className="hover:text-amber-700"
+            >
               Recommendations
             </Link>
 
-            {user && (
-              <Link
-                href="/favorites"
-                className="flex items-center gap-1 hover:text-amber-700"
-              >
-                <Heart size={18} />
-                Favorites
-              </Link>
-            )}
+            <Link
+              href="/favorites"
+              className="flex items-center gap-1 hover:text-amber-700"
+            >
+              <Heart size={18} />
+              Favorites
+            </Link>
 
           </div>
 
           <div className="hidden md:flex items-center gap-4">
 
-            {!user ? (
+            {user ? (
               <>
+
+                <span className="font-medium">
+                  Hi, {user.name}
+                </span>
+
+                <Link href="/profile">
+                  <User className="hover:text-amber-700" />
+                </Link>
+
+                <button
+                  onClick={() => {
+                    logout();
+                    window.location.href = "/";
+                  }}
+                  className="flex items-center gap-2 border rounded-lg px-4 py-2 hover:bg-gray-100"
+                >
+                  <LogOut size={18} />
+                  Logout
+                </button>
+
+              </>
+            ) : (
+              <>
+
                 <Link
                   href="/login"
                   className="px-4 py-2 rounded-lg border hover:bg-gray-100"
@@ -75,24 +93,7 @@ export default function Navbar() {
                 >
                   Register
                 </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-2"
-                >
-                  <User />
-                  <span>{user.name}</span>
-                </Link>
 
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 text-red-600 hover:text-red-700"
-                >
-                  <LogOut size={18} />
-                  Logout
-                </button>
               </>
             )}
 
@@ -113,55 +114,58 @@ export default function Navbar() {
 
             <div className="flex flex-col gap-4">
 
-              <Link href="/" onClick={() => setIsOpen(false)}>
+              <Link
+                href="/"
+                onClick={() => setIsOpen(false)}
+              >
                 Home
               </Link>
 
-              <Link href="/cafes" onClick={() => setIsOpen(false)}>
+              <Link
+                href="/cafes"
+                onClick={() => setIsOpen(false)}
+              >
                 Cafes
               </Link>
 
-              <Link href="/recommendations" onClick={() => setIsOpen(false)}>
+              <Link
+                href="/recommendations"
+                onClick={() => setIsOpen(false)}
+              >
                 Recommendations
               </Link>
 
-              {user && (
-                <>
-                  <Link href="/favorites" onClick={() => setIsOpen(false)}>
-                    Favorites
-                  </Link>
+              <Link
+                href="/favorites"
+                onClick={() => setIsOpen(false)}
+              >
+                Favorites
+              </Link>
 
-                  <Link href="/profile" onClick={() => setIsOpen(false)}>
-                    Profile
-                  </Link>
-
-                  <button
-                    onClick={() => {
-                      logout();
-                      router.push("/login");
-                      setIsOpen(false);
-                    }}
-                    className="text-left text-red-600"
-                  >
-                    Logout
-                  </button>
-                </>
-              )}
-
-              {!user && (
+              {user ? (
+                <button
+                  onClick={() => {
+                    logout();
+                    window.location.href = "/";
+                  }}
+                  className="border rounded-lg p-2"
+                >
+                  Logout
+                </button>
+              ) : (
                 <>
                   <Link
                     href="/login"
-                    onClick={() => setIsOpen(false)}
                     className="border rounded-lg p-2 text-center"
+                    onClick={() => setIsOpen(false)}
                   >
                     Login
                   </Link>
 
                   <Link
                     href="/register"
-                    onClick={() => setIsOpen(false)}
                     className="bg-amber-700 text-white rounded-lg p-2 text-center"
+                    onClick={() => setIsOpen(false)}
                   >
                     Register
                   </Link>

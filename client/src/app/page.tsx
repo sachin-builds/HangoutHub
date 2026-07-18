@@ -1,8 +1,14 @@
+"use client";
+
 import Hero from "@/components/home/Hero";
 import SearchSection from "@/components/home/SearchSection";
 import CafeCard from "@/components/cards/CafeCard";
 
+import { useCafes } from "@/hooks/useCafes";
+
 export default function Home() {
+  const { cafes, loading, error } = useCafes();
+
   return (
     <>
       <Hero />
@@ -23,13 +29,46 @@ export default function Home() {
 
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* Loading */}
 
-          <CafeCard />
-          <CafeCard />
-          <CafeCard />
+        {loading && (
+          <div className="py-20 text-center text-lg font-medium">
+            Loading cafes...
+          </div>
+        )}
 
-        </div>
+        {/* Error */}
+
+        {!loading && error && (
+          <div className="py-20 text-center text-red-600">
+            {error}
+          </div>
+        )}
+
+        {/* Empty */}
+
+        {!loading && !error && cafes.length === 0 && (
+          <div className="py-20 text-center text-gray-500">
+            No cafes available.
+          </div>
+        )}
+
+        {/* Cafes */}
+
+        {!loading && !error && cafes.length > 0 && (
+
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+
+            {cafes.map((cafe) => (
+              <CafeCard
+                key={cafe.id}
+                cafe={cafe}
+              />
+            ))}
+
+          </div>
+
+        )}
 
       </section>
     </>

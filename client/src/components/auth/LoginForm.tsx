@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 import { loginUser } from "@/services/auth.service";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { login } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -37,8 +39,7 @@ export default function LoginForm() {
 
       const data = await loginUser(formData);
 
-      localStorage.setItem("token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      login(data.user, data.access_token);
 
       alert("Login Successful!");
 

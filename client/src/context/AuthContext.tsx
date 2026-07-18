@@ -16,7 +16,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (token: string, user: User) => void;
+  login: (user: User, token: string) => void;
   logout: () => void;
 }
 
@@ -28,34 +28,36 @@ export function AuthProvider({
   children: React.ReactNode;
 }) {
   const [user, setUser] = useState<User | null>(null);
-
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("token");
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
+    if (storedUser) {
       setUser(JSON.parse(storedUser));
+    }
+
+    if (storedToken) {
+      setToken(storedToken);
     }
   }, []);
 
-  const login = (token: string, user: User) => {
-    localStorage.setItem("token", token);
+  function login(user: User, token: string) {
     localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", token);
 
-    setToken(token);
     setUser(user);
-  };
+    setToken(token);
+  }
 
-  const logout = () => {
-    localStorage.removeItem("token");
+  function logout() {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
 
-    setToken(null);
     setUser(null);
-  };
+    setToken(null);
+  }
 
   return (
     <AuthContext.Provider
@@ -75,7 +77,9 @@ export function useAuth() {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error("useAuth must be inside AuthProvider");
+    throw new Error(
+      "useAuth must be used within AuthProvider"
+    );
   }
 
   return context;

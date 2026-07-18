@@ -18,5 +18,13 @@ export const registerUser = async (data: RegisterDto) => {
 
 export const loginUser = async (data: LoginDto) => {
   const response = await api.post("/auth/login", data);
+
+  localStorage.setItem("token", response.data.access_token);
+
+  localStorage.setItem(
+    "user",
+    JSON.stringify(response.data.user)
+  );
+
   return response.data;
 };
