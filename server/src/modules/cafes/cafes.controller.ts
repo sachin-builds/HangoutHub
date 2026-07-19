@@ -10,6 +10,9 @@ import {
   Post,
 } from '@nestjs/common';
 
+import { Query } from '@nestjs/common';
+import { SearchCafeDto } from './dto/search-cafe.dto';
+
 import { CafesService } from './cafes.service';
 
 import { CreateCafeDto } from './dto/create-cafe.dto';
@@ -26,9 +29,10 @@ export class CafesController {
   }
 
   @Get()
-  @HttpCode(HttpStatus.OK)
-  findAll() {
-    return this.cafesService.findAll();
+  findAll(
+    @Query() searchDto: SearchCafeDto,
+  ) {
+    return this.cafesService.findAll(searchDto);
   }
 
   @Get(':id')

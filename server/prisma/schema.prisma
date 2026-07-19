@@ -8,94 +8,73 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String     @unique
   password  String
-
-  reviews   Review[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   favorites Favorite[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  reviews   Review[]
 }
 
-
 model Cafe {
-  id          String   @id @default(uuid())
-
-  name        String
-  description String?
-
-  address     String
-  city        String
-
-  latitude    Float
-  longitude   Float
-
-  imageUrl    String?
-
-  openingTime String?
-  closingTime String?
-
-  wifi        Boolean @default(true)
-  powerSockets Boolean @default(true)
-
-  noiseLevel  Int @default(3)
-
-  priceRange  PriceRange
-
-  reviews     Review[]
-  favorites   Favorite[]
-  vibes       CafeVibe[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String     @id @default(uuid())
+  name         String
+  description  String?
+  address      String
+  latitude     Float
+  longitude    Float
+  priceRange   PriceRange
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  city         String
+  closingTime  String?
+  imageUrl     String?
+  noiseLevel   Int        @default(3)
+  openingTime  String?
+  powerSockets Boolean    @default(true)
+  wifi         Boolean    @default(true)
+  vibes        CafeVibe[]
+  favorites    Favorite[]
+  reviews      Review[]
+  averageCost  Int?
+  isOpen       Boolean    @default(true)
 }
 
 model Review {
   id        String   @id @default(uuid())
-
   rating    Int
   comment   String?
-
   userId    String
   cafeId    String
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cafe Cafe @relation(fields: [cafeId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  cafe      Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
 model Favorite {
-  id String @id @default(uuid())
-
+  id     String @id @default(uuid())
   userId String
   cafeId String
-
-  user User @relation(fields: [userId], references: [id])
-  cafe Cafe @relation(fields: [cafeId], references: [id])
+  cafe   Cafe   @relation(fields: [cafeId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   @@unique([userId, cafeId])
 }
 
 model Vibe {
-  id   String @id @default(uuid())
-
-  name String @unique
-
+  id    String     @id @default(uuid())
+  name  String     @unique
   cafes CafeVibe[]
 }
 
 model CafeVibe {
   cafeId String
   vibeId String
-
-  cafe Cafe @relation(fields: [cafeId], references: [id])
-  vibe Vibe @relation(fields: [vibeId], references: [id])
+  cafe   Cafe   @relation(fields: [cafeId], references: [id])
+  vibe   Vibe   @relation(fields: [vibeId], references: [id])
 
   @@id([cafeId, vibeId])
 }

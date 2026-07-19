@@ -1,30 +1,23 @@
-import api from "./axios";
+import api from "@/lib/axios";
 
-export interface Cafe {
-  id: string;
-  name: string;
-  description?: string;
-  address: string;
-  city: string;
-  latitude: number;
-  longitude: number;
-  imageUrl?: string;
-  openingTime?: string;
-  closingTime?: string;
-  wifi?: boolean;
-  powerSockets?: boolean;
-  noiseLevel?: number;
-  priceRange: "BUDGET" | "MID" | "PREMIUM";
-  createdAt: string;
-  updatedAt: string;
-}
-
-export const getAllCafes = async (): Promise<Cafe[]> => {
+export const getAllCafes = async () => {
   const response = await api.get("/cafes");
   return response.data;
 };
 
-export const getCafeById = async (id: string): Promise<Cafe> => {
+export const searchCafes = async (params: {
+  search?: string;
+  address?: string;
+  priceRange?: string;
+}) => {
+  const response = await api.get("/cafes", {
+    params,
+  });
+
+  return response.data;
+};
+
+export const getCafeById = async (id: string) => {
   const response = await api.get(`/cafes/${id}`);
   return response.data;
 };

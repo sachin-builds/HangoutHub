@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
 } from 'class-validator';
 
 import { PriceRange } from '@prisma/client';
@@ -29,8 +30,17 @@ export class CreateCafeDto {
   longitude!: number;
 
   @IsOptional()
-  @IsString()
+  @IsUrl()
   imageUrl?: string;
+
+  @IsNumber()
+  averageCost!: number;
+
+  @IsBoolean()
+  wifi!: boolean;
+
+  @IsBoolean()
+  isOpen!: boolean;
 
   @IsOptional()
   @IsString()
@@ -39,18 +49,6 @@ export class CreateCafeDto {
   @IsOptional()
   @IsString()
   closingTime?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  wifi?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  powerSockets?: boolean;
-
-  @IsOptional()
-  @IsNumber()
-  noiseLevel?: number;
 
   @IsEnum(PriceRange)
   priceRange!: PriceRange;
