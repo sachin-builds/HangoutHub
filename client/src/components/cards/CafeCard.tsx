@@ -2,18 +2,35 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, MapPin, Star, Wifi } from "lucide-react";
+
+import {
+  Heart,
+  MapPin,
+  Star,
+  Wifi,
+} from "lucide-react";
+
+import { useFavorites } from "@/context/FavoritesContext";
+
 
 interface CafeCardProps {
   cafe: any;
 }
 
-export default function CafeCard({ cafe }: CafeCardProps) {
+export default function CafeCard({
+  cafe,
+}: CafeCardProps) {
+  const {
+    toggleFavorite,
+    isFavorite,
+  } = useFavorites();
+
   const avgRating =
     cafe.reviews.length > 0
       ? (
           cafe.reviews.reduce(
-            (sum: number, review: any) => sum + review.rating,
+            (sum: number, review: any) =>
+              sum + review.rating,
             0
           ) / cafe.reviews.length
         ).toFixed(1)
@@ -21,8 +38,6 @@ export default function CafeCard({ cafe }: CafeCardProps) {
 
   return (
     <div className="group overflow-hidden rounded-2xl bg-white shadow-md transition hover:-translate-y-2 hover:shadow-xl">
-
-      {/* Image */}
 
       <div className="relative h-56">
 
@@ -39,8 +54,22 @@ export default function CafeCard({ cafe }: CafeCardProps) {
           </div>
         )}
 
-        <button className="absolute right-4 top-4 rounded-full bg-white p-2 shadow">
-          <Heart className="text-red-500" size={20} />
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFavorite(cafe.id);
+          }}
+          className="absolute right-4 top-4 rounded-full bg-white p-2 shadow transition hover:scale-110"
+        >
+          <Heart
+            size={20}
+            className={
+              isFavorite(cafe.id)
+                ? "fill-red-500 text-red-500"
+                : "text-gray-500"
+            }
+          />
         </button>
 
       </div>
@@ -60,17 +89,16 @@ export default function CafeCard({ cafe }: CafeCardProps) {
                 : "bg-red-100 text-red-700"
             }`}
           >
-            {cafe.isOpen ? "Open" : "Closed"}
+            {cafe.isOpen
+              ? "Open"
+              : "Closed"}
           </span>
 
         </div>
 
         <div className="mt-3 flex items-center gap-2 text-gray-600">
-
           <MapPin size={18} />
-
           {cafe.city}
-
         </div>
 
         <div className="mt-3 flex items-center gap-2">

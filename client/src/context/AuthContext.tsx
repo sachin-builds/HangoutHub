@@ -11,6 +11,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  role: "USER" | "ADMIN";
 }
 
 interface AuthContextType {
@@ -44,7 +45,11 @@ export function AuthProvider({
   }, []);
 
   function login(user: User, token: string) {
-    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem(
+      "user",
+      JSON.stringify(user)
+    );
+
     localStorage.setItem("token", token);
 
     setUser(user);

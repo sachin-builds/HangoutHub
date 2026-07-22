@@ -9,6 +9,8 @@ import { CafesModule } from './modules/cafes/cafes.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { RecommendationsModule } from './modules/recommendations/recommendations.module';
+import { AdminModule } from './modules/admin/admin.module';
+
 
 
 
@@ -26,6 +28,7 @@ import { RecommendationsModule } from './modules/recommendations/recommendations
     ReviewsModule,
     FavoritesModule,
     RecommendationsModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

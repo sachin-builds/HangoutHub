@@ -1,70 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../../prisma/prisma.service';
 
+import { SearchCafeDto } from './dto/search-cafe.dto';
 import { CreateCafeDto } from './dto/create-cafe.dto';
 import { UpdateCafeDto } from './dto/update-cafe.dto';
-
-import { SearchCafeDto } from './dto/search-cafe.dto';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CafesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createCafeDto: CreateCafeDto) {
-    return this.prisma.cafe.create({
-      data: createCafeDto,
-    });
-  }
-
   async findAll(searchDto: SearchCafeDto) {
-  const {
-    search,
-    address,
-    priceRange,
-  } = searchDto;
+    const { city, priceRange } = searchDto;
 
-  const where: Prisma.CafeWhereInput = {};
+    const where: any = {};
 
-  if (search) {
-    where.name = {
-      contains: search,
-      mode: 'insensitive',
-    };
-  }
+    if (city) {
+      where.city = {
+        contains: city,
+        mode: 'insensitive',
+      };
+    }
 
-  if (address) {
-    where.address = {
-      contains: address,
-      mode: 'insensitive',
-    };
-  }
+    if (priceRange) {
+      where.priceRange = priceRange;
+    }
 
-  if (priceRange) {
-    where.priceRange = priceRange;
-  }
-
-  return this.prisma.cafe.findMany({
-    where,
-    include: {
-      reviews: true,
-      favorites: true,
-      vibes: {
-        include: {
-          vibe: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
-}
-
-  async findOne(id: string) {
-    return this.prisma.cafe.findUnique({
-      where: { id },
+    return this.prisma.cafe.findMany({
+      where,
       include: {
         reviews: true,
         favorites: true,
@@ -77,7 +43,48 @@ export class CafesService {
     });
   }
 
-  async update(id: string, updateCafeDto: UpdateCafeDto) {
+  async findOne(id: string) {
+    const cafe = await this.prisma.cafe.findUnique({
+      where: { id },
+      include: {
+        reviews: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        favorites: true,
+        vibes: {
+          include: {
+            vibe: true,
+          },
+        },
+      },
+    });
+
+    if (!cafe) {
+      throw new NotFoundException('Cafe not found');
+    }
+
+    return cafe;
+  }
+
+  async create(createCafeDto: CreateCafeDto) {
+    return this.prisma.cafe.create({
+      data: createCafeDto,
+    });
+  }
+
+  async update(
+    id: string,
+    updateCafeDto: UpdateCafeDto,
+  ) {
+    await this.findOne(id);
+
     return this.prisma.cafe.update({
       where: { id },
       data: updateCafeDto,
@@ -85,6 +92,8 @@ export class CafesService {
   }
 
   async remove(id: string) {
+    await this.findOne(id);
+
     return this.prisma.cafe.delete({
       where: { id },
     });

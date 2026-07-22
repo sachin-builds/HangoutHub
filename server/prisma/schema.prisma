@@ -12,10 +12,19 @@ model User {
   name      String
   email     String     @unique
   password  String
+
+  role      Role       @default(USER)
+
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
   favorites Favorite[]
   reviews   Review[]
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model Cafe {
@@ -35,11 +44,11 @@ model Cafe {
   openingTime  String?
   powerSockets Boolean    @default(true)
   wifi         Boolean    @default(true)
+  averageCost  Int?
+  isOpen       Boolean    @default(true)
   vibes        CafeVibe[]
   favorites    Favorite[]
   reviews      Review[]
-  averageCost  Int?
-  isOpen       Boolean    @default(true)
 }
 
 model Review {

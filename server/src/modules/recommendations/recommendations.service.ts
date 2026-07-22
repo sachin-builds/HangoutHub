@@ -1,64 +1,76 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+import { GoogleGenAI } from '@google/genai';
+
 import { PrismaService } from '../../prisma/prisma.service';
-import { RecommendationDto } from './dto/recommendation.dto';
 
 @Injectable()
 export class RecommendationsService {
-  constructor(private prisma: PrismaService) {}
+  private ai: GoogleGenAI;
 
-  async recommend(dto: RecommendationDto) {
+  constructor(
+    private prisma: PrismaService,
+    private config: ConfigService,
+  ) {
+    this.ai = new GoogleGenAI({
+      apiKey: this.config.get<string>('GEMINI_API_KEY')!,
+    });
+  }
+
+  async recommend(prompt: string) {
     const cafes = await this.prisma.cafe.findMany({
       include: {
         reviews: true,
-        vibes: {
-          include: {
-            vibe: true,
-          },
-        },
       },
     });
 
-    const ranked = cafes.map((cafe) => {
-      let score = 0;
+    const cafeData = cafes.map((cafe) => ({
+      id: cafe.id,
+      name: cafe.name,
+      city: cafe.city,
+      address: cafe.address,
+      description: cafe.description,
+      wifi: cafe.wifi,
+      priceRange: cafe.priceRange,
+      averageCost: cafe.averageCost,
+      isOpen: cafe.isOpen,
+    }));
 
-      // Price Match
-      if (
-        dto.priceRange &&
-        cafe.priceRange === dto.priceRange
-      ) {
-        score += 30;
-      }
+    const fullPrompt = `
+You are an AI cafe recommendation assistant.
 
-      // Average Rating
-      if (cafe.reviews.length > 0) {
-        const avg =
-          cafe.reviews.reduce(
-            (sum, review) => sum + review.rating,
-            0,
-          ) / cafe.reviews.length;
+Available cafes:
 
-        score += avg * 10;
-      }
+${JSON.stringify(cafeData, null, 2)}
 
-      // Purpose / Vibe
-      if (dto.purpose) {
-        const matched = cafe.vibes.some((v) =>
-          v.vibe.name
-            .toLowerCase()
-            .includes(dto.purpose!.toLowerCase()),
-        );
+User request:
 
-        if (matched) score += 40;
-      }
+"${prompt}"
 
-      return {
-        ...cafe,
-        score,
-      };
+Recommend the best cafes.
+
+Return ONLY valid JSON.
+
+Example:
+
+[
+ {
+   "id":"",
+   "reason":"..."
+ }
+]
+`;
+
+    const result = await this.ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: fullPrompt,
     });
 
-    ranked.sort((a, b) => b.score - a.score);
+    const text = result.text ?? '[]';
 
-    return ranked;
+    return JSON.parse(
+      text.replace(/```json|```/g, '').trim(),
+    );
   }
 }

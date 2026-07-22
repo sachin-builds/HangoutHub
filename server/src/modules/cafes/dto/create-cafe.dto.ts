@@ -40,6 +40,12 @@ export class CreateCafeDto {
   wifi!: boolean;
 
   @IsBoolean()
+  powerSockets!: boolean;
+
+  @IsNumber()
+  noiseLevel!: number;
+
+  @IsBoolean()
   isOpen!: boolean;
 
   @IsOptional()

@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 
 import { useCafe } from "@/hooks/useCafe";
+
 import CafeDetails from "@/components/cafe/CafeDetails";
 
 export default function CafePage() {
@@ -14,23 +15,15 @@ export default function CafePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center text-xl font-semibold">
-        Loading cafe...
+      <div className="flex justify-center py-20">
+        Loading...
       </div>
     );
   }
 
-  if (error) {
+  if (error || !cafe) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center text-red-600">
-        {error}
-      </div>
-    );
-  }
-
-  if (!cafe) {
-    return (
-      <div className="flex min-h-[70vh] items-center justify-center text-gray-500">
+      <div className="flex justify-center py-20 text-red-500">
         Cafe not found.
       </div>
     );

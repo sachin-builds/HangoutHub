@@ -3,6 +3,7 @@
 import { Star, MessageSquare } from "lucide-react";
 
 import { useReviews } from "@/hooks/useReviews";
+import ReviewForm from "./ReviewForm";
 
 interface Props {
   cafeId: string;
@@ -14,11 +15,12 @@ export default function ReviewsSection({ cafeId }: Props) {
     averageRating,
     totalReviews,
     loading,
+    refreshReviews,
   } = useReviews(cafeId);
 
   if (loading) {
     return (
-      <div className="rounded-2xl border p-8 mt-10">
+      <div className="mt-10 rounded-2xl border p-8">
         Loading reviews...
       </div>
     );
@@ -26,6 +28,11 @@ export default function ReviewsSection({ cafeId }: Props) {
 
   return (
     <section className="mt-12">
+
+      <ReviewForm
+        cafeId={cafeId}
+        onSuccess={refreshReviews}
+      />
 
       {/* Header */}
 
@@ -37,8 +44,9 @@ export default function ReviewsSection({ cafeId }: Props) {
             Reviews
           </h2>
 
-          <p className="text-gray-500 mt-2">
-            {totalReviews} review{totalReviews !== 1 ? "s" : ""}
+          <p className="mt-2 text-gray-500">
+            {totalReviews} review
+            {totalReviews !== 1 ? "s" : ""}
           </p>
 
         </div>
@@ -58,7 +66,7 @@ export default function ReviewsSection({ cafeId }: Props) {
 
       </div>
 
-      {/* Empty */}
+      {/* Empty State */}
 
       {reviews.length === 0 && (
         <div className="mt-8 rounded-2xl border border-dashed p-10 text-center">
@@ -83,7 +91,7 @@ export default function ReviewsSection({ cafeId }: Props) {
 
       <div className="mt-8 space-y-6">
 
-        {reviews.map((review) => (
+        {reviews.map((review: any) => (
 
           <div
             key={review.id}
@@ -94,12 +102,14 @@ export default function ReviewsSection({ cafeId }: Props) {
 
               <div>
 
-                <h3 className="font-semibold text-lg">
+                <h3 className="text-lg font-semibold">
                   {review.user.name}
                 </h3>
 
                 <p className="text-sm text-gray-500">
-                  {new Date(review.createdAt).toLocaleDateString()}
+                  {new Date(
+                    review.createdAt
+                  ).toLocaleDateString()}
                 </p>
 
               </div>
@@ -126,7 +136,7 @@ export default function ReviewsSection({ cafeId }: Props) {
 
             {review.comment && (
 
-              <p className="mt-5 text-gray-700 leading-7">
+              <p className="mt-5 leading-7 text-gray-700">
                 {review.comment}
               </p>
 

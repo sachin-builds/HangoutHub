@@ -3,37 +3,46 @@
 import { useEffect, useState } from "react";
 
 import {
-  Review,
-  getReviews,
   getAverageRating,
+  getCafeReviews,
 } from "@/services/review.service";
 
 export function useReviews(cafeId: string) {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [averageRating, setAverageRating] = useState(0);
-  const [totalReviews, setTotalReviews] = useState(0);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [averageRating, setAverageRating] =
+    useState(0);
+  const [totalReviews, setTotalReviews] =
+    useState(0);
   const [loading, setLoading] = useState(true);
 
-  async function loadReviews() {
+  const refreshReviews = async () => {
     try {
       setLoading(true);
 
-      const reviewsData = await getReviews(cafeId);
+      const [reviewsData, ratingData] =
+        await Promise.all([
+          getCafeReviews(cafeId),
+          getAverageRating(cafeId),
+        ]);
+
       setReviews(reviewsData);
 
-      const avg = await getAverageRating(cafeId);
+      setAverageRating(
+        ratingData.averageRating ?? 0
+      );
 
-      setAverageRating(avg.averageRating);
-      setTotalReviews(avg.totalReviews);
+      setTotalReviews(
+        ratingData.totalReviews ?? 0
+      );
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    if (cafeId) {
-      loadReviews();
-    }
+    refreshReviews();
   }, [cafeId]);
 
   return {
@@ -41,6 +50,6 @@ export function useReviews(cafeId: string) {
     averageRating,
     totalReviews,
     loading,
-    refresh: loadReviews,
+    refreshReviews,
   };
 }

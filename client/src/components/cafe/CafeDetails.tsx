@@ -1,6 +1,7 @@
 "use client";
 
 import ReviewsSection from "@/components/reviews/ReviewsSection";
+import GoogleMapComponent from "@/components/map/GoogleMap";
 
 import {
   MapPin,
@@ -166,19 +167,39 @@ export default function CafeDetails({ cafe }: CafeDetailsProps) {
 
       <div className="mt-10 rounded-2xl border p-8">
 
-        <h2 className="text-2xl font-bold">
-          Location
-        </h2>
+      <h2 className="text-2xl font-bold mb-6">
+        Location
+      </h2>
 
-        <div className="mt-6 flex h-72 items-center justify-center rounded-xl bg-gray-100">
+      <GoogleMapComponent
+        latitude={cafe.latitude}
+        longitude={cafe.longitude}
+        name={cafe.name}
+      />
 
-          <span className="text-gray-500 text-lg">
-            Google Maps Integration Coming Soon
-          </span>
+      <div className="mt-6 flex gap-4">
 
-        </div>
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${cafe.latitude},${cafe.longitude}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-xl bg-amber-700 px-6 py-3 text-white hover:bg-amber-800"
+        >
+          Open in Google Maps
+        </a>
+
+        <a
+          href={`https://www.google.com/maps/dir/?api=1&destination=${cafe.latitude},${cafe.longitude}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-xl border px-6 py-3 hover:bg-gray-100"
+        >
+          Get Directions
+        </a>
 
       </div>
+
+    </div>
 
       {/* Reviews */}
 
